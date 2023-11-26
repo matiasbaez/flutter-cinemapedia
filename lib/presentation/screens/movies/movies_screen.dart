@@ -37,6 +37,9 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
     super.initState();
 
     ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
+    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+    ref.read(popularMoviesProvider.notifier).loadNextPage();
   }
 
   @override
@@ -49,6 +52,9 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
 
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideshowMovies = ref.watch(moviesSlideshowProvider);
+    final topratedMovies = ref.watch(topRatedMoviesProvider);
+    final upcomingMovies = ref.watch(upcomingMoviesProvider);
+    final popularMovies = ref.watch(popularMoviesProvider);
 
     return CustomScrollView(
       slivers: [
@@ -76,27 +82,28 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
                     movies: nowPlayingMovies,
                     title: 'Cines',
                     subtitle: 'Monday 27',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
+                    loadNextPage: () => ref.read(nowPlayingMoviesProvider.notifier).loadNextPage(),
                   ),
 
                   MovieHorizontalListView(
-                    movies: nowPlayingMovies,
+                    movies: upcomingMovies,
                     title: 'Soon',
                     subtitle: 'Monday 4',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
+                    loadNextPage: () => ref.read(upcomingMoviesProvider.notifier).loadNextPage(),
                   ),
 
                   MovieHorizontalListView(
-                    movies: nowPlayingMovies,
+                    movies: popularMovies,
                     title: 'Popular',
                     // subtitle: 'Monday 4',
-                    loadNextPage: () {
-                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-                    },
+                    loadNextPage: () => ref.read(popularMoviesProvider.notifier).loadNextPage(),
+                  ),
+
+                  MovieHorizontalListView(
+                    movies: topratedMovies,
+                    title: 'Top Rated',
+                    // subtitle: 'Monday 4',
+                    loadNextPage: () => ref.read(topRatedMoviesProvider.notifier).loadNextPage(),
                   ),
 
                 ],
