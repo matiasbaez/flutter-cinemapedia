@@ -50,6 +50,9 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
   @override
   Widget build(BuildContext context) {
 
+    final isLoading = ref.watch(firstLoadingProvider);
+    if (isLoading) return const FullScreenLoader();
+
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideshowMovies = ref.watch(moviesSlideshowProvider);
     final topratedMovies = ref.watch(topRatedMoviesProvider);
