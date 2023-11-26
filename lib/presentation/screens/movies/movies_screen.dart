@@ -50,43 +50,62 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideshowMovies = ref.watch(moviesSlideshowProvider);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
+    return CustomScrollView(
+      slivers: [
 
-          const CustomAppBar(),
-
-          MoviesSlideshow(movies: slideshowMovies),
-
-          MovieHorizontalListView(
-            movies: nowPlayingMovies,
-            title: 'Cines',
-            subtitle: 'Monday 27',
-            loadNextPage: () {
-              ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-            },
+        const SliverAppBar(
+          floating: true,
+          snap: true,
+          flexibleSpace: FlexibleSpaceBar(
+            titlePadding: EdgeInsets.all(0),
+            title: CustomAppBar(),
           ),
+        ),
 
-          MovieHorizontalListView(
-            movies: nowPlayingMovies,
-            title: 'Soon',
-            subtitle: 'Monday 4',
-            loadNextPage: () {
-              ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return Column(
+                children: [
+
+                  // const CustomAppBar(),
+
+                  MoviesSlideshow(movies: slideshowMovies),
+
+                  MovieHorizontalListView(
+                    movies: nowPlayingMovies,
+                    title: 'Cines',
+                    subtitle: 'Monday 27',
+                    loadNextPage: () {
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                    },
+                  ),
+
+                  MovieHorizontalListView(
+                    movies: nowPlayingMovies,
+                    title: 'Soon',
+                    subtitle: 'Monday 4',
+                    loadNextPage: () {
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                    },
+                  ),
+
+                  MovieHorizontalListView(
+                    movies: nowPlayingMovies,
+                    title: 'Popular',
+                    // subtitle: 'Monday 4',
+                    loadNextPage: () {
+                      ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                    },
+                  ),
+
+                ],
+              );
             },
-          ),
-
-          MovieHorizontalListView(
-            movies: nowPlayingMovies,
-            title: 'Popular',
-            // subtitle: 'Monday 4',
-            loadNextPage: () {
-              ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-            },
-          ),
-
-        ],
-      ),
+            childCount: 1
+          )
+        )
+      ],
     );
   }
 }
