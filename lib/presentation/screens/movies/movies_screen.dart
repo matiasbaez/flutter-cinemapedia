@@ -1,7 +1,9 @@
 
-import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
+import 'package:cinemapedia/presentation/providers/providers.dart';
 
 class MoviesScreen extends StatelessWidget {
 
@@ -11,9 +13,10 @@ class MoviesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Movies')),
-      body: const _MoviesView()
+    return const Scaffold(
+      // appBar: AppBar(title: const Text('Movies')),
+      body: _MoviesView(),
+      bottomNavigationBar: CustomNavigationBar(),
     );
   }
 
@@ -37,18 +40,24 @@ class _MoviesViewState extends ConsumerState<_MoviesView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
-    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    // final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    final slideshowMovies = ref.watch(moviesSlideshowProvider);
 
-    return ListView.builder(
-      itemCount: nowPlayingMovies.length,
-      itemBuilder: (context, index) {
-        final movie = nowPlayingMovies[index];
-        return ListTile(
-          title: Text(movie.title),
-        );
-      }
+    return Column(
+      children: [
+
+        const CustomAppBar(),
+
+        MoviesSlideshow(movies: slideshowMovies),
+
+      ],
     );
   }
 }
