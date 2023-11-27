@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:animate_do/animate_do.dart';
+
 import 'package:cinemapedia/domain/entities/entities.dart';
 
 class CustomSliverAppBar extends StatelessWidget {
@@ -36,6 +38,11 @@ class CustomSliverAppBar extends StatelessWidget {
               child: Image.network(
                 movie.posterPath,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress != null) return const SizedBox();
+
+                  return FadeIn(child: child);
+                }
               ),
             ),
 
