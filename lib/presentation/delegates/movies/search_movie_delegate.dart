@@ -30,6 +30,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
 
   final SearchMoviesCallback searchMovies;
+  final List<Movie> initialMovies;
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast(); // For multiple subscriptions
   Timer? _dounceTimer;
 
@@ -39,7 +40,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     super.searchFieldDecorationTheme,
     super.keyboardType,
     super.textInputAction,
-    required this.searchMovies
+    required this.searchMovies,
+    required this.initialMovies
   });
 
   void _onQueryChanged( String query ) {
@@ -50,10 +52,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _dounceTimer = Timer(
       const Duration(milliseconds: 500),
       () async {
-        if (query.isEmpty) {
-          debounceMovies.add([]);
-          return;
-        }
+        // if (query.isEmpty) {
+        //   debounceMovies.add([]);
+        //   return;
+        // }
 
         final movies = await searchMovies(query);
         debounceMovies.add(movies);
@@ -65,11 +67,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     debounceMovies.close();
   }
 
-  @override
-  void dispose() {
-    clearStreams();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   clearStreams();
+  //   super.dispose();
+  // }
 
   @override
   String? get searchFieldLabel => 'Buscar pelicula';
@@ -120,6 +122,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _onQueryChanged(query);
 
     return StreamBuilder(
+      initialData: initialMovies,
       stream: debounceMovies.stream,
       builder: (context, snapshot) {
 
