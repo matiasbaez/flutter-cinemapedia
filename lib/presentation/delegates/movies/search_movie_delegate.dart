@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:cinemapedia/config/helpers/helpers.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +30,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
 
   final SearchMoviesCallback searchMovies;
+  StreamController<List<Movie>> debounceMovies = StreamController.broadcast(); // For multiple subscriptions
+  Timer? _dounceTimer;
 
   SearchMovieDelegate({
     super.searchFieldLabel,
@@ -37,6 +41,35 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     super.textInputAction,
     required this.searchMovies
   });
+
+  void _onQueryChanged( String query ) {
+    // reset timer is query change (user is writing)
+    if (_dounceTimer?.isActive ?? false)  _dounceTimer!.cancel();
+
+    // make request if the user is not writing anymore
+    _dounceTimer = Timer(
+      const Duration(milliseconds: 500),
+      () async {
+        if (query.isEmpty) {
+          debounceMovies.add([]);
+          return;
+        }
+
+        final movies = await searchMovies(query);
+        debounceMovies.add(movies);
+      }
+    );
+  }
+
+  void clearStreams() {
+    debounceMovies.close();
+  }
+
+  @override
+  void dispose() {
+    clearStreams();
+    super.dispose();
+  }
 
   @override
   String? get searchFieldLabel => 'Buscar pelicula';
@@ -70,6 +103,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       ),
       tooltip: 'Back',
       onPressed: () {
+        clearStreams();
         close(context, null);
       },
     );
@@ -83,8 +117,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   Widget buildSuggestions(BuildContext context) {
 
-    return FutureBuilder(
-      future: searchMovies(query),
+    _onQueryChanged(query);
+
+    return StreamBuilder(
+      stream: debounceMovies.stream,
       builder: (context, snapshot) {
 
         // if (!snapshot.hasData) {
@@ -101,6 +137,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
             return _MovieItem(
               movie: movie,
               onMovieSelected: () {
+                clearStreams();
                 close(context, movie);
               },
             );
