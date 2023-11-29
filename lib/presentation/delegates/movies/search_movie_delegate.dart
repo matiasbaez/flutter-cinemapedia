@@ -30,7 +30,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
 
   final SearchMoviesCallback searchMovies;
-  final List<Movie> initialMovies;
+  List<Movie> initialMovies;
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast(); // For multiple subscriptions
   Timer? _dounceTimer;
 
@@ -58,6 +58,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
         // }
 
         final movies = await searchMovies(query);
+        initialMovies = movies;
         debounceMovies.add(movies);
       }
     );
@@ -111,24 +112,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    return const Text('Results');
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-
-    _onQueryChanged(query);
-
+  Widget buildResultsAndSuggestions() {
     return StreamBuilder(
       initialData: initialMovies,
       stream: debounceMovies.stream,
       builder: (context, snapshot) {
-
-        // if (!snapshot.hasData) {
-        //   return const Center(child: CircularProgressIndicator());
-        // }
 
         final movies = snapshot.data ?? [];
 
@@ -151,7 +139,21 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     );
   }
 
+  @override
+  Widget buildResults(BuildContext context) {
+    return buildResultsAndSuggestions();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+
+    _onQueryChanged(query);
+
+    return buildResultsAndSuggestions();
+  }
+
 }
+
 
 class _MovieItem extends StatelessWidget {
 
@@ -185,7 +187,7 @@ class _MovieItem extends StatelessWidget {
                   movie.posterPath,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress != null) {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     return FadeIn(child: child);
