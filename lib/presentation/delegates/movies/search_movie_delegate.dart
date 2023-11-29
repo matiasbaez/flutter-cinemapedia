@@ -1,11 +1,11 @@
 
 import 'dart:async';
 
-import 'package:cinemapedia/config/helpers/helpers.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animate_do/animate_do.dart';
 
+import 'package:cinemapedia/config/helpers/helpers.dart';
 import 'package:cinemapedia/domain/entities/entities.dart';
 
 class Suggestion {
@@ -32,6 +32,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
   List<Movie> initialMovies;
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast(); // For multiple subscriptions
+  StreamController<bool> isLoadingStream = StreamController.broadcast();
   Timer? _dounceTimer;
 
   SearchMovieDelegate({
@@ -45,6 +46,9 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   });
 
   void _onQueryChanged( String query ) {
+
+    isLoadingStream.add(true);
+
     // reset timer is query change (user is writing)
     if (_dounceTimer?.isActive ?? false)  _dounceTimer!.cancel();
 
@@ -60,6 +64,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
         final movies = await searchMovies(query);
         initialMovies = movies;
         debounceMovies.add(movies);
+        isLoadingStream.add(false);
       }
     );
   }
@@ -81,18 +86,38 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   List<Widget>? buildActions(BuildContext context) {
     return [
 
-      if (query.isNotEmpty)
-        FadeIn(
-          animate: query.isNotEmpty,
-          duration: const Duration(milliseconds: 200),
-          child: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              query = '';
-              // close(context, null);
-            }
-          ),
-        )
+      StreamBuilder(
+        initialData: false,
+        stream: isLoadingStream.stream,
+        builder: (context, snapshopt) {
+          if (snapshopt.data ?? false) {
+            return SpinPerfect(
+              duration: const Duration(seconds: 10),
+              infinite: true,
+              spins: 10,
+              animate: query.isNotEmpty,
+              child: IconButton(
+                icon: const Icon(Icons.refresh_rounded),
+                onPressed: () => query = '',
+              ),
+            );
+          }
+
+          // if (query.isNotEmpty)
+          return  FadeIn(
+            animate: query.isNotEmpty,
+            duration: const Duration(milliseconds: 200),
+            child: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                query = '';
+                // close(context, null);
+              }
+            ),
+          );
+        }
+      ),
+
     ];
   }
 
