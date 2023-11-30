@@ -1,6 +1,33 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:go_router/go_router.dart';
+
+class NavigationItem {
+
+  final String url;
+  final Widget icon;
+  final String? label;
+  final Widget? activeIcon;
+  final Color? backgroundColor;
+  final String? tooltip;
+
+  const NavigationItem({
+    required this.url,
+    required this.icon,
+    this.label,
+    this.activeIcon,
+    this.backgroundColor,
+    this.tooltip
+  });
+}
+
+const List<NavigationItem> navigationItems = [
+  NavigationItem(url: '/', icon: Icon(Icons.home_max), label: 'Home'),
+  NavigationItem(url: '/categories', icon: Icon(Icons.label_outline), label: 'Categories'),
+  NavigationItem(url: '/favorites', icon: Icon(Icons.label_outline), label: 'Favorites'),
+];
+
 class CustomNavigationBar extends StatelessWidget {
 
   const CustomNavigationBar({super.key});
@@ -9,30 +36,21 @@ class CustomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final colors = Theme.of(context).colorScheme;
+    final location = GoRouterState.of(context).uri.toString();
 
     return BottomNavigationBar(
       elevation: 0,
+      currentIndex: navigationItems.indexWhere((item) => item.url == location),
+      onTap: (index) => context.go(navigationItems[index].url),
       items: [
 
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_max, color: colors.secondary),
+        ...navigationItems.map((item) => BottomNavigationBarItem(
+          icon: item.icon,
           activeIcon: Icon(Icons.home_max, color: colors.primary),
-          label: "Home"
-        ),
+          label: item.label ?? ''
+        )),
 
-        BottomNavigationBarItem(
-          icon: Icon(Icons.label_outline, color: colors.secondary),
-          activeIcon: Icon(Icons.label_outline, color: colors.primary),
-          label: "Categories"
-        ),
-
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_outline, color: colors.secondary),
-          activeIcon: Icon(Icons.favorite_outline, color: colors.primary),
-          label: "Favorites"
-        ),
-
-      ],
+      ]
     );
   }
 }
