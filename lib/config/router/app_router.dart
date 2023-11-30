@@ -1,6 +1,7 @@
 
 import 'package:go_router/go_router.dart';
 
+import 'package:cinemapedia/presentation/views/views.dart';
 import 'package:cinemapedia/presentation/screens/screens.dart';
 
 final appRouter = GoRouter(
@@ -10,7 +11,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: MoviesScreen.name,
-      builder: (context, state) => const MoviesScreen(),
+      builder: (context, state) => const MoviesScreen(childView: MoviesView()),
       routes: [
 
         GoRoute(
