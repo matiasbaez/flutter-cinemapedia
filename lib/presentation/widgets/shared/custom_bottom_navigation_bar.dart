@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 
+import 'package:cinemapedia/config/records/records.dart';
+
 class NavigationItem {
 
   final String url;
@@ -36,12 +38,11 @@ class CustomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final colors = Theme.of(context).colorScheme;
-    final location = GoRouterState.of(context).uri.toString();
 
     return BottomNavigationBar(
       elevation: 0,
-      currentIndex: navigationItems.indexWhere((item) => item.url == location),
-      onTap: (index) => context.go(navigationItems[index].url),
+      currentIndex: RouterManager.getCurrentRouteWithIdx(ctx: context).$1,
+      onTap: (index) => context.go(RouterManager.getCurrentRouteWithIdx(idx: index).$2),
       items: [
 
         ...navigationItems.map((item) => BottomNavigationBarItem(
