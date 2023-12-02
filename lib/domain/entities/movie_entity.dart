@@ -1,5 +1,11 @@
+import 'package:isar/isar.dart';
 
+part 'movie_entity.g.dart';
+
+@collection
 class Movie {
+
+  Id? isarId;
 
   final bool adult;
   final String backdropPath;

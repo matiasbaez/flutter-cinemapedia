@@ -57,8 +57,21 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
     final Movie? movie = ref.watch(movieDetailProvider)[widget.movieId];
 
     if (movie == null) {
-      return const Center(
-        child: CircularProgressIndicator()
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text('Movie not found'),
+            const SizedBox(height: 10),
+            IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: const Icon( Icons.arrow_back )
+            )
+          ]
+        )
       );
     }
 

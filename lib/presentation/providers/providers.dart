@@ -12,3 +12,6 @@ export 'package:cinemapedia/presentation/providers/movies/movies_repository_prov
 
 // Search
 export 'package:cinemapedia/presentation/providers/search/search_movies_provider.dart';
+
+// Storage
+export 'package:cinemapedia/presentation/providers/storage/local_storage_provider.dart';

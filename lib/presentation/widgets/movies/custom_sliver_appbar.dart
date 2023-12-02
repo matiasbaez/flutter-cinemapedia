@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:isar/isar.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:cinemapedia/domain/entities/entities.dart';
+import 'package:cinemapedia/presentation/providers/providers.dart';
 
-class CustomSliverAppBar extends StatelessWidget {
+// With .family can receive an argument
+// With .autoDispose the state is reseted
+final isFavoriteProvider = FutureProvider.family.autoDispose((ref, int movieId ) {
+  final localStorage = ref.watch(localStorageProvider);
+  return localStorage.isInFavorite(movieId);
+});
+
+class CustomSliverAppBar extends ConsumerWidget {
 
   final Movie movie;
 
@@ -14,15 +24,37 @@ class CustomSliverAppBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
     final size = MediaQuery.of(context).size;
+    final favoriteProvider = ref.watch( isFavoriteProvider(movie.id) );
 
     return SliverAppBar(
       backgroundColor: Colors.black,
       expandedHeight: size.height * .7,
       foregroundColor: Colors.white,
       // shadowColor: Colors.red,
+      actions: [
+        IconButton(
+          onPressed: () {
+
+            ref.watch( localStorageProvider ).toggleFavorite(movie)
+            .then((value) {
+
+              // Invalidate the provider state to return to initial state
+              // This make the "request" again
+              ref.invalidate(isFavoriteProvider(movie.id));
+
+            });
+
+          },
+          icon: favoriteProvider.when(
+            data: (isFavorite) => isFavorite ? const Icon( Icons.favorite, color: Colors.red ) : const Icon( Icons.favorite_border ),
+            error: (error, stacktrace) => const Icon( Icons.favorite_border ),
+            loading: () => const Icon( Icons.favorite_border )
+          ),
+        )
+      ],
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         title: Text(
@@ -47,6 +79,16 @@ class CustomSliverAppBar extends StatelessWidget {
             ),
 
             // Box shadow
+            const _BoxShadow(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: [0.0, 0.2],
+              colors: [
+                Colors.black54,
+                Colors.transparent
+              ],
+            ),
+
             const _BoxShadow(),
 
             const _BoxShadow(

@@ -18,3 +18,5 @@ samples, guidance on mobile development, and a full API reference.
 # DEV
 1. Copy the .env.example and rename it to .env
 2. Complete with your own keys (The Movie DB)
+3. The entities implements Isar, is needed to run the command:
+ - flutter pub run build_runner build
