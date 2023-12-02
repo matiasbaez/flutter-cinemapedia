@@ -34,8 +34,12 @@ final appRouter = GoRouter(
 
         GoRoute(
           path: '/favorites',
-          // name: MoviesScreen.name,
           builder: (context, state) => const FavoriteView(),
+        ),
+
+        GoRoute(
+          path: '/categories',
+          builder: (context, state) => const PopularView(),
         ),
 
       ]
