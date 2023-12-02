@@ -141,20 +141,11 @@ class _Slide extends StatelessWidget {
             width: 150,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                movie.posterPath,
-                width: 150,
+              child: FadeInImage(
+                height: 220,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress != null) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  return FadeIn(child: child);
-                }
+                image: NetworkImage(movie.posterPath),
+                placeholder: const AssetImage('assets/loaders/bottle-loader.gif'),
               ),
             ),
           ),

@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-part 'movie_entity.g.dart';
+part 'movie.g.dart';
 
 @collection
 class Movie {

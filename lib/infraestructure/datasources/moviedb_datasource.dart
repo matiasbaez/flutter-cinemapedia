@@ -17,7 +17,7 @@ class MovieDBDatasource extends MoviesDataSource {
     }
   ));
 
-  List<Movie> jsonToMovies(Map<String, dynamic> json) {
+  List<Movie> _jsonToMovies(Map<String, dynamic> json) {
 
     final movieDBResponse = MovieDbResponse.fromJson(json);
 
@@ -33,25 +33,25 @@ class MovieDBDatasource extends MoviesDataSource {
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async {
     final response = await dio.get('/movie/now_playing', queryParameters: { 'page': page });
-    return jsonToMovies(response.data);
+    return _jsonToMovies(response.data);
   }
 
   @override
   Future<List<Movie>> getPopular({int page = 1}) async {
     final response = await dio.get('/movie/popular', queryParameters: { 'page': page });
-    return jsonToMovies(response.data);
+    return _jsonToMovies(response.data);
   }
 
   @override
   Future<List<Movie>> getUpcoming({int page = 1}) async {
     final response = await dio.get('/movie/upcoming', queryParameters: { 'page': page });
-    return jsonToMovies(response.data);
+    return _jsonToMovies(response.data);
   }
 
   @override
   Future<List<Movie>> getTopRated({int page = 1}) async {
     final response = await dio.get('/movie/top_rated', queryParameters: { 'page': page });
-    return jsonToMovies(response.data);
+    return _jsonToMovies(response.data);
   }
 
   @override
@@ -70,7 +70,30 @@ class MovieDBDatasource extends MoviesDataSource {
   Future<List<Movie>> searchMovies(String query) async {
     if (query.isEmpty) return [];
     final response = await dio.get('/search/movie', queryParameters: { 'query': query });
-    return jsonToMovies(response.data);
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Movie>> getSimilarMovies(int movieId) async {
+    final response = await dio.get('/movie/$movieId/similar');
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Video>> getYoutubeVideosById(int movieId) async {
+
+    final response = await dio.get('/movie/$movieId/videos');
+    final moviedbVideosReponse = MovieDBVideosResponse.fromJson(response.data);
+    final videos = <Video>[];
+
+    for (final moviedbVideo in moviedbVideosReponse.results) {
+      if ( moviedbVideo.site == 'YouTube' ) {
+        final video = VideoMapper.moviedbVideoToEntity(moviedbVideo);
+        videos.add(video);
+      }
+    }
+
+    return videos;
   }
 
 }

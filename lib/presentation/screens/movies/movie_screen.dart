@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:cinemapedia/config/helpers/helpers.dart';
 import 'package:cinemapedia/domain/entities/entities.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
@@ -120,128 +121,113 @@ class _MovieDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              // Movie Picture
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  movie.posterPath,
-                  width: size.width * .3,
-                ),
-              ),
-
-              const SizedBox( width: 10 ),
-
-              // Description
-              SizedBox(
-                width: (size.width - 40) * .7,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(movie.title, style: textStyle.titleLarge, textAlign: TextAlign.justify),
-                    Text(movie.overview)
-                  ],
-                ),
-              ),
-
-            ],
-          ),
-        ),
+        _TitleAndOverview(movie: movie, size: size, textStyle: textStyle),
 
         // Genres
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Wrap(
-            children: [
-              ...movie.genreIds.map((gender) => Container(
-                margin: const EdgeInsets.only(right: 10),
-                child: Chip(
-                  label: Text(gender),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                ),
-              )).toList()
-            ],
-          ),
-        ),
+        _Genres(movie: movie),
 
         // Movie Actors
-        _ActorsByMovie(movieId: movie.id.toString()),
+        ActorsByMovie(movieId: movie.id.toString()),
 
-        const SizedBox(height: 50),
+        // Videos of the movie
+        VideosFromMovieDB( movieId: movie.id ),
+
+        // Similar movies
+        SimilarMovies(movieId: movie.id ),
+
+        // const SizedBox(height: 50),
 
       ],
     );
   }
 }
 
-class _ActorsByMovie extends ConsumerWidget {
+class _TitleAndOverview extends StatelessWidget {
 
-  final String movieId;
-
-  const _ActorsByMovie({
-    required this.movieId
+  const _TitleAndOverview({
+    required this.movie,
+    required this.size,
+    required this.textStyle,
   });
 
+  final Movie movie;
+  final Size size;
+  final TextTheme textStyle;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
-    final actorsByMovie = ref.watch( actorsByMovieProvider );
+          // Movie Picture
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              movie.posterPath,
+              width: size.width * .3,
+            ),
+          ),
 
-    if (actorsByMovie[movieId] == null) {
-      return const Center(
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
-    }
+          const SizedBox( width: 10 ),
 
-    final actors = actorsByMovie[movieId]!;
-
-    return SizedBox(
-      height: 300,
-      child: ListView.builder(
-        itemCount: actors.length,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext context, int index) {
-
-          final actor = actors[index];
-
-          return Container(
-            padding: const EdgeInsets.all(8),
-            width: 135,
+          // Description
+          SizedBox(
+            width: (size.width - 40) * .7,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(movie.title, style: textStyle.titleLarge, textAlign: TextAlign.justify),
+                Text(movie.overview),
 
-                // Actor photo
-                FadeInRight(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      actor.profilePath,
-                      height: 180,
-                      width: 135,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 10 ),
 
-                // Actor Name
-                const SizedBox( height: 5 ),
-                Text(actor.name, maxLines: 2),
-                Text(
-                  actor.character ?? '',
-                  maxLines: 2,
-                  style: const TextStyle( fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
-                ),
+                MovieRating(voteAverage: movie.voteAverage ),
 
+                Row(
+                  children: [
+                    const Text('Estreno:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 5 ),
+                    Text(HumanFormats.shortDate(movie.releaseDate))
+                  ],
+                )
               ],
             ),
-          );
-        },
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
+class _Genres extends StatelessWidget {
+
+  const _Genres({
+    required this.movie,
+  });
+
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          children: [
+            ...movie.genreIds.map((gender) => Container(
+              margin: const EdgeInsets.only(right: 10),
+              child: Chip(
+                label: Text(gender),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+            )).toList()
+          ],
+        ),
       ),
     );
   }

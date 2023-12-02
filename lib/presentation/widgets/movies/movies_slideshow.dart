@@ -69,20 +69,10 @@ class _Slide extends StatelessWidget {
         decoration: decoration,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Image.network(
-            movie.backdropPath,
+          child: FadeInImage(
             fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress != null) {
-                return const DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black12
-                  )
-                );
-              }
-
-              return FadeIn(child: child);
-            },
+            image: NetworkImage(movie.backdropPath),
+            placeholder: const AssetImage('assets/loaders/bottle-loader.gif'),
           )
         ),
       ),

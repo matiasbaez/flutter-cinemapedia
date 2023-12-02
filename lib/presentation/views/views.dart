@@ -1,3 +1,3 @@
 
-export 'package:cinemapedia/presentation/views/home_views/favorites_view.dart';
-export 'package:cinemapedia/presentation/views/home_views/movies_view.dart';
+export 'package:cinemapedia/presentation/views/movies/favorites_view.dart';
+export 'package:cinemapedia/presentation/views/movies/movies_view.dart';
