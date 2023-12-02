@@ -62,14 +62,20 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('Movie not found'),
+            const Text('Searching movie...'),
             const SizedBox(height: 10),
-            IconButton(
+
+            const CircularProgressIndicator(),
+
+            const SizedBox(height: 10),
+
+            FilledButton.icon(
               onPressed: () {
                 context.pop();
               },
-              icon: const Icon( Icons.arrow_back )
-            )
+              label: const Text('Go back'),
+              icon: const Icon( Icons.arrow_back_ios_new_outlined ),
+            ),
           ]
         )
       );

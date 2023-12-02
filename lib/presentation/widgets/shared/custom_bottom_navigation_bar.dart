@@ -27,7 +27,7 @@ class NavigationItem {
 const List<NavigationItem> navigationItems = [
   NavigationItem(url: '/', icon: Icon(Icons.home_max), label: 'Home'),
   NavigationItem(url: '/categories', icon: Icon(Icons.label_outline), label: 'Categories'),
-  NavigationItem(url: '/favorites', icon: Icon(Icons.label_outline), label: 'Favorites'),
+  NavigationItem(url: '/favorites', icon: Icon(Icons.favorite_outline), label: 'Favorites'),
 ];
 
 class CustomNavigationBar extends StatelessWidget {

@@ -15,3 +15,4 @@ export 'package:cinemapedia/presentation/providers/search/search_movies_provider
 
 // Storage
 export 'package:cinemapedia/presentation/providers/storage/local_storage_provider.dart';
+export 'package:cinemapedia/presentation/providers/storage/favorite_movies_provider.dart';
